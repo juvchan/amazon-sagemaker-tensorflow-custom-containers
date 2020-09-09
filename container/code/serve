@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+
+# This file implements the hosting solution, which just starts TensorFlow Model Serving.
+import subprocess
+import os
+
+TF_SERVING_DEFAULT_PORT = 8501
+MODEL_NAME = 'flowers_model'
+MODEL_BASE_PATH = '/opt/ml/model'
+
+
+def start_server():
+    print('Starting TensorFlow Serving.')
+
+    # link the log streams to stdout/err so they will be logged to the container logs
+    subprocess.check_call(
+        ['ln', '-sf', '/dev/stdout', '/var/log/nginx/access.log'])
+    subprocess.check_call(
+        ['ln', '-sf', '/dev/stderr', '/var/log/nginx/error.log'])
+
+    # start nginx server
+    nginx = subprocess.Popen(['nginx', '-c', '/opt/ml/code/nginx.conf'])
+
+    # start TensorFlow Serving
+    # https://www.tensorflow.org/serving/api_rest#start_modelserver_with_the_rest_api_endpoint
+    tf_model_server = subprocess.call(['tensorflow_model_server',
+                                       '--rest_api_port=' +
+                                       str(TF_SERVING_DEFAULT_PORT),
+                                       '--model_name=' + MODEL_NAME,
+                                       '--model_base_path=' + MODEL_BASE_PATH])
+
+
+# The main routine just invokes the start function.
+if __name__ == '__main__':
+    start_server()
