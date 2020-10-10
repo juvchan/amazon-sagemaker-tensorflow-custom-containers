@@ -1,5 +1,5 @@
 # Copyright 2020 Juv Chan. All Rights Reserved.
-FROM tensorflow/tensorflow:2.3.0-gpu
+FROM tensorflow/tensorflow:2.3.1-gpu
 
 LABEL maintainer="Juv Chan <juvchan@hotmail.com>"
 
